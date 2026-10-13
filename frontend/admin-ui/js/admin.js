@@ -35,7 +35,7 @@ class AdminDashboard {
   checkAuth() {
     const token = typeof localStorage !== 'undefined' ? localStorage.getItem('codespark_staff_token') : null;
     if (!token) {
-      window.location.href = 'login.html';
+      window.location.href = window.location.pathname.endsWith('.html') ? 'login.html' : 'login';
     }
   }
 
@@ -47,7 +47,7 @@ class AdminDashboard {
         if (confirm('Are you sure you want to log out of Kitchen Admin?')) {
           localStorage.removeItem('codespark_staff_token');
           localStorage.removeItem('codespark_staff_user');
-          window.location.href = 'login.html';
+          window.location.href = window.location.pathname.endsWith('.html') ? 'login.html' : 'login';
         }
       });
     }

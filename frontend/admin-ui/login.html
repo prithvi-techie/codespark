@@ -195,7 +195,7 @@
         const res = await Api.staffLogin(username, password);
 
         if (res && res.token) {
-          window.location.href = 'index.html';
+          window.location.href = window.location.pathname.endsWith('.html') ? 'index.html' : './';
         } else {
           throw new Error('Authentication failed.');
         }
