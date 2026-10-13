@@ -186,7 +186,7 @@ async function runTests() {
   // 4. Order Placement & Tracking
   console.log("\n--- Suite 4: Order Placement & Tracking Integration ---");
 
-  await testAsync("Order Placement: Successful mock order creates valid structure and sequential ORDER_ID/MMYY", async () => {
+  await testAsync("Order Placement: Successful mock order creates valid structure and sequential DD-MM/1000", async () => {
     Cart.clear();
     const item = { id: "item_101", name: "Veg Sandwich", price: 50, available: true };
     // ensure item 101 is available in mock menu
@@ -197,7 +197,7 @@ async function runTests() {
     const result = await Api.placeOrder(payload);
 
     assert.ok(result.order);
-    assert.match(result.order.orderNumber, /^(\d+\/\d{4}|ORD-\d+)$/);
+    assert.match(result.order.orderNumber, /^(\d{2}-\d{2}\/\d{4,5}|\d+\/\d{4}|ORD-\d+)$/);
     assert.equal(result.order.status, "New");
     assert.equal(result.order.total, 50);
     assert.equal(result.order.items.length, 1);
@@ -223,6 +223,38 @@ async function runTests() {
 
     // Reset item 101 back to available
     Api._mockSetItemAvailability("item_101", true);
+  });
+
+  await testAsync("Order Placement: Rejects invalid, fractional, negative, zero, and excessive quantities", async () => {
+    // 1. Zero quantity
+    await assert.rejects(
+      async () => Api.placeOrder({ items: [{ itemId: "item_101", quantity: 0 }] }),
+      (err) => err.code === "VALIDATION_ERROR" || err.statusCode === 400 || err.message.includes("positive integer")
+    );
+
+    // 2. Negative quantity
+    await assert.rejects(
+      async () => Api.placeOrder({ items: [{ itemId: "item_101", quantity: -2 }] }),
+      (err) => err.code === "VALIDATION_ERROR" || err.statusCode === 400 || err.message.includes("positive integer")
+    );
+
+    // 3. Fractional quantity (e.g. 1.5)
+    await assert.rejects(
+      async () => Api.placeOrder({ items: [{ itemId: "item_101", quantity: 1.5 }] }),
+      (err) => err.code === "VALIDATION_ERROR" || err.statusCode === 400 || err.message.includes("positive integer")
+    );
+
+    // 4. Excessive quantity (e.g. 51 > max 50)
+    await assert.rejects(
+      async () => Api.placeOrder({ items: [{ itemId: "item_101", quantity: 51 }] }),
+      (err) => err.code === "VALIDATION_ERROR" || err.statusCode === 400 || err.message.includes("cannot exceed") || err.message.includes("positive integer")
+    );
+
+    // 5. String / invalid type quantity
+    await assert.rejects(
+      async () => Api.placeOrder({ items: [{ itemId: "item_101", quantity: "two" }] }),
+      (err) => err.code === "VALIDATION_ERROR" || err.statusCode === 400 || err.message.includes("positive integer")
+    );
   });
 
   await testAsync("Order Tracking: Fetches all four order statuses properly", async () => {

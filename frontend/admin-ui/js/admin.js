@@ -241,8 +241,8 @@ class AdminDashboard {
 
     container.innerHTML = '';
 
-    // Sort: Newest orders first
-    const sorted = [...this.activeOrders].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    // Sort: Oldest orders first (so earliest placed orders appear at top of kitchen queue)
+    const sorted = [...this.activeOrders].sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
 
     sorted.forEach(order => {
       const card = document.createElement('div');

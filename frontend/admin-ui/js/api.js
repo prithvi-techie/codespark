@@ -483,8 +483,24 @@ export const Api = {
           err.code = "ITEM_UNAVAILABLE";
           throw err;
         }
-        if (typeof itemReq.quantity !== 'number' || itemReq.quantity <= 0) {
-          throw new Error(`Invalid quantity for item "${menuItem.name}".`);
+
+        const qty = itemReq.quantity;
+        if (
+          qty === undefined ||
+          qty === null ||
+          typeof qty !== 'number' ||
+          !Number.isInteger(qty) ||
+          qty <= 0
+        ) {
+          const err = new Error(`Quantity for item "${menuItem.name}" must be a valid positive integer.`);
+          err.code = "VALIDATION_ERROR";
+          throw err;
+        }
+
+        if (qty > 50) {
+          const err = new Error(`Quantity for item "${menuItem.name}" cannot exceed 50 per order.`);
+          err.code = "VALIDATION_ERROR";
+          throw err;
         }
 
         const subtotal = menuItem.price * itemReq.quantity;
@@ -502,9 +518,9 @@ export const Api = {
       const ordersRaw = localStorage.getItem(STORAGE_KEYS.ORDERS);
       const allOrders = ordersRaw ? JSON.parse(ordersRaw) : [];
       const now = new Date();
-      const mmyy = `${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getFullYear()).slice(-2)}`;
-      const seq = 100 + allOrders.length;
-      const orderNumber = `${seq}/${mmyy}`;
+      const ddmm = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const seq = 1000 + allOrders.length;
+      const orderNumber = `${ddmm}/${seq}`;
 
       const newOrder = {
         orderNumber,

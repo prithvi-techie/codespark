@@ -234,6 +234,51 @@
     </div>
   </div>
 
+  <!-- Floating Corner Cart Button -->
+  <button id="floating-cart-btn" class="floating-cart-btn" aria-label="Open Shopping Cart" title="View Cart">
+    <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+    </svg>
+    <span id="floating-cart-count" class="floating-cart-badge" style="display:none;">0</span>
+  </button>
+
+  <!-- Cart Popup Modal -->
+  <div class="modal-overlay" id="cart-popup-modal" role="dialog" aria-modal="true" aria-labelledby="cart-popup-title">
+    <div class="modal-box cart-popup-box">
+      <div class="cart-popup-header">
+        <h2 id="cart-popup-title" class="cart-popup-title">
+          <svg style="width:22px;height:22px;color:var(--lime);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          Your Cart <span id="cart-popup-items-count" style="font-size:0.95rem;color:var(--text-muted);font-weight:600;">(0)</span>
+        </h2>
+        <button id="btn-close-cart-popup" class="cart-popup-close-btn" aria-label="Close Cart Popup">×</button>
+      </div>
+
+      <div class="cart-popup-body">
+        <div class="cart-items-list" id="cart-popup-items-list">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="cart-summary" style="margin-top:1rem;padding-top:0.85rem;">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="cart-popup-subtotal">₹0</span>
+          </div>
+          <div class="summary-row total-row">
+            <span>Total Payable</span>
+            <span id="cart-popup-total">₹0</span>
+          </div>
+          <p class="provisional-note">*Provisional total; validated upon order placement.</p>
+
+          <button id="btn-popup-checkout" class="btn-checkout" disabled>
+            Cart is Empty
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container" aria-live="polite"></div>
 

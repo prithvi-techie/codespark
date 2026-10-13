@@ -27,7 +27,7 @@ function calculateRushLevel(activeCount) {
 async function getActiveOrdersAndRush() {
   const activeOrders = await Order.find({ 
     status: { $ne: 'Collected' } 
-  }).sort({ createdAt: -1 });
+  }).sort({ createdAt: 1 });
 
   const activeCount = activeOrders.length;
   const rushLevel = calculateRushLevel(activeCount);

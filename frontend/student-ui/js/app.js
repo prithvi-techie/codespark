@@ -79,7 +79,17 @@ class StudentApp {
       modalItemsSummary: document.getElementById('modal-items-summary'),
       btnModalTrack: document.getElementById('btn-modal-track'),
       btnModalClose: document.getElementById('btn-modal-close'),
-      categoryChips: document.querySelectorAll('.category-chip')
+      categoryChips: document.querySelectorAll('.category-chip'),
+      // Floating corner cart and popup modal
+      floatingCartBtn: document.getElementById('floating-cart-btn'),
+      floatingCartCount: document.getElementById('floating-cart-count'),
+      cartPopupModal: document.getElementById('cart-popup-modal'),
+      btnCloseCartPopup: document.getElementById('btn-close-cart-popup'),
+      cartPopupItemsCount: document.getElementById('cart-popup-items-count'),
+      cartPopupItemsList: document.getElementById('cart-popup-items-list'),
+      cartPopupSubtotal: document.getElementById('cart-popup-subtotal'),
+      cartPopupTotal: document.getElementById('cart-popup-total'),
+      btnPopupCheckout: document.getElementById('btn-popup-checkout')
     };
 
     const brandHome = document.getElementById('brand-home-link');
@@ -87,6 +97,34 @@ class StudentApp {
       brandHome.addEventListener('click', (e) => {
         e.preventDefault();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // Floating corner cart popup events
+    if (this.elements.floatingCartBtn) {
+      this.elements.floatingCartBtn.addEventListener('click', () => {
+        this.openCartPopup();
+      });
+    }
+
+    if (this.elements.btnCloseCartPopup) {
+      this.elements.btnCloseCartPopup.addEventListener('click', () => {
+        this.closeCartPopup();
+      });
+    }
+
+    if (this.elements.cartPopupModal) {
+      this.elements.cartPopupModal.addEventListener('click', (e) => {
+        if (e.target === this.elements.cartPopupModal) {
+          this.closeCartPopup();
+        }
+      });
+    }
+
+    if (this.elements.btnPopupCheckout) {
+      this.elements.btnPopupCheckout.addEventListener('click', () => {
+        this.closeCartPopup();
+        this.handleCheckout();
       });
     }
   }
@@ -216,41 +254,77 @@ class StudentApp {
     const subtotal = Cart.getSubtotal();
     const total = Cart.getTotal();
 
-    // Update Badges & Counters
+    // Update Badges & Counters (Nav badge + Floating Corner badge)
     if (this.elements.cartCountBadge) {
       this.elements.cartCountBadge.textContent = totalCount;
       this.elements.cartCountBadge.style.display = totalCount > 0 ? 'inline-block' : 'none';
     }
+    if (this.elements.floatingCartCount) {
+      this.elements.floatingCartCount.textContent = totalCount;
+      this.elements.floatingCartCount.style.display = totalCount > 0 ? 'flex' : 'none';
+    }
     if (this.elements.cartItemsCount) {
       this.elements.cartItemsCount.textContent = `(${totalCount})`;
+    }
+    if (this.elements.cartPopupItemsCount) {
+      this.elements.cartPopupItemsCount.textContent = `(${totalCount})`;
     }
     if (this.elements.cartSubtotal) {
       this.elements.cartSubtotal.textContent = `₹${subtotal}`;
     }
+    if (this.elements.cartPopupSubtotal) {
+      this.elements.cartPopupSubtotal.textContent = `₹${subtotal}`;
+    }
     if (this.elements.cartTotal) {
       this.elements.cartTotal.textContent = `₹${total}`;
     }
-
-    // Checkout button state
-    const hasUnavailable = Cart.hasUnavailableItems();
-    if (this.elements.btnCheckout) {
-      if (Cart.isEmpty()) {
-        this.elements.btnCheckout.disabled = true;
-        this.elements.btnCheckout.textContent = "Cart is Empty";
-      } else if (hasUnavailable) {
-        this.elements.btnCheckout.disabled = true;
-        this.elements.btnCheckout.textContent = "Remove Sold Out Items";
-      } else {
-        this.elements.btnCheckout.disabled = false;
-        this.elements.btnCheckout.textContent = `Place Order • ₹${total}`;
-      }
+    if (this.elements.cartPopupTotal) {
+      this.elements.cartPopupTotal.textContent = `₹${total}`;
     }
 
-    // Render items list
-    if (!this.elements.cartItemsList) return;
+    // Checkout button state for main page cart
+    const hasUnavailable = Cart.hasUnavailableItems();
+    const updateCheckoutBtn = (btn) => {
+      if (!btn) return;
+      if (Cart.isEmpty()) {
+        btn.disabled = true;
+        btn.textContent = "Cart is Empty";
+      } else if (hasUnavailable) {
+        btn.disabled = true;
+        btn.textContent = "Remove Sold Out Items";
+      } else {
+        btn.disabled = false;
+        btn.textContent = `Place Order • ₹${total}`;
+      }
+    };
+
+    updateCheckoutBtn(this.elements.btnCheckout);
+    updateCheckoutBtn(this.elements.btnPopupCheckout);
+
+    // Render items list in both containers if present
+    const containers = [this.elements.cartItemsList, this.elements.cartPopupItemsList].filter(Boolean);
+    containers.forEach(container => {
+      this.renderCartItemsInto(container, items);
+    });
+  }
+
+  openCartPopup() {
+    if (this.elements.cartPopupModal) {
+      this.elements.cartPopupModal.classList.add('active');
+    }
+  }
+
+  closeCartPopup() {
+    if (this.elements.cartPopupModal) {
+      this.elements.cartPopupModal.classList.remove('active');
+    }
+  }
+
+  renderCartItemsInto(container, items) {
+    if (!container) return;
 
     if (items.length === 0) {
-      this.elements.cartItemsList.innerHTML = `
+      container.innerHTML = `
         <div class="cart-empty-state">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -262,7 +336,7 @@ class StudentApp {
       return;
     }
 
-    this.elements.cartItemsList.innerHTML = '';
+    container.innerHTML = '';
 
     items.forEach(item => {
       const row = document.createElement('div');
@@ -336,7 +410,7 @@ class StudentApp {
 
       row.appendChild(info);
       row.appendChild(controls);
-      this.elements.cartItemsList.appendChild(row);
+      container.appendChild(row);
     });
   }
 

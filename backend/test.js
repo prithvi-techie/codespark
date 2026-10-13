@@ -116,7 +116,7 @@ async function runTests() {
     });
     assert(order1Res.status === 201, 'POST /api/orders returns HTTP 201 Created');
     const order1Number = order1Res.data.order ? order1Res.data.order.orderNumber : '';
-    assert(/^100\/\d{4}$/.test(order1Number), `First order has orderNumber ${order1Number} matching ^100/\\d{4}$`);
+    assert(/^\d{2}-\d{2}\/1000$/.test(order1Number), `First order has orderNumber ${order1Number} matching ^\\d{2}-\\d{2}\\/1000$`);
     assert(order1Res.data.order.status === 'New', 'Initial status is "New"');
     assert(order1Res.data.order.total === 100, 'Server calculated total correctly: 2 * 50 = 100');
     assert(order1Res.data.order.items[0].subtotal === 100, 'Item subtotal correctly calculated: 100');
@@ -241,7 +241,7 @@ async function runTests() {
     });
     assert(orderAgain.status === 201, 'Order succeeds now that Veg Sandwich is available again');
     const orderAgainNum = orderAgain.data.order ? orderAgain.data.order.orderNumber : '';
-    assert(/^101\/\d{4}$/.test(orderAgainNum), `Order placement after toggling availability receives sequential ID ${orderAgainNum} (101/MMYY)`);
+    assert(/^\d{2}-\d{2}\/1001$/.test(orderAgainNum), `Order placement after toggling availability receives sequential ID ${orderAgainNum} (DD-MM/1001)`);
 
     // ----------------------------------------------------
     // TEST SUITE 8: Sequential Order ID & Concurrency Safety
@@ -255,8 +255,8 @@ async function runTests() {
     });
     const num2 = order2Res.data.order ? order2Res.data.order.orderNumber : '';
     const num3 = order3Res.data.order ? order3Res.data.order.orderNumber : '';
-    assert(/^102\/\d{4}$/.test(num2), `Next order has sequential ID ${num2} (102/MMYY)`);
-    assert(/^103\/\d{4}$/.test(num3), `Next order has sequential ID ${num3} (103/MMYY)`);
+    assert(/^\d{2}-\d{2}\/1002$/.test(num2), `Next order has sequential ID ${num2} (DD-MM/1002)`);
+    assert(/^\d{2}-\d{2}\/1003$/.test(num3), `Next order has sequential ID ${num3} (DD-MM/1003)`);
 
     // Concurrency test: place 5 orders in parallel
     const concurrentPromises = Array.from({ length: 5 }, () => 
@@ -266,7 +266,7 @@ async function runTests() {
     const concurrentIds = concurrentResults.map(r => r.data.order?.orderNumber);
     const uniqueIds = new Set(concurrentIds);
     assert(uniqueIds.size === 5, `Concurrent orders produced 5 distinct sequential IDs: ${concurrentIds.join(', ')}`);
-    assert(concurrentIds.every(id => /^\d+\/\d{4}$/.test(id)), 'All concurrent IDs match format SEQUENCE/MMYY');
+    assert(concurrentIds.every(id => /^\d{2}-\d{2}\/\d{4,5}$/.test(id)), 'All concurrent IDs match format DD-MM/SEQUENCE');
 
     // ----------------------------------------------------
     // TEST SUMMARY

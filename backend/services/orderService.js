@@ -4,24 +4,24 @@ const Order = require('../models/Order');
 const Counter = require('../models/Counter');
 
 /**
- * Format month and year as MMYY (e.g. 1026 for October 2026)
+ * Format day and month as DD-MM (e.g. 13-10 for 13th October)
  */
-function getMMYY(date = new Date()) {
+function getDDMM(date = new Date()) {
+  const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear()).slice(-2);
-  return `${month}${year}`;
+  return `${day}-${month}`;
 }
 
 /**
- * Generate the next sequential order ID (e.g., 100/1026, 101/1026, 102/1026)
+ * Generate the next sequential order ID (e.g., 13-10/1000, 13-10/1001, 13-10/1002)
  * Concurrency-safe atomic increment via MongoDB findOneAndUpdate.
- * Starts from 100 and increments by 1 sequentially.
+ * Starts from 1000 and increments by 1 sequentially.
  */
 async function getNextOrderNumber(date = new Date()) {
-  const mmyy = getMMYY(date);
+  const ddmm = getDDMM(date);
 
   // Atomically increment the sequence counter.
-  // Initial sequence counter starts at 100 on first order.
+  // Initial sequence counter starts at 1000 on first order.
   const counter = await Counter.findOneAndUpdate(
     { _id: 'order_id_seq' },
     { $inc: { seq: 1 } },
@@ -29,18 +29,17 @@ async function getNextOrderNumber(date = new Date()) {
   );
 
   let seqNum = counter.seq;
-  // If counter was newly created with default 99, $inc makes it 100.
-  // Ensure seqNum is at least 100.
-  if (seqNum < 100) {
+  // Ensure seqNum is at least 1000.
+  if (seqNum < 1000) {
     const updated = await Counter.findOneAndUpdate(
       { _id: 'order_id_seq' },
-      { $set: { seq: 100 } },
+      { $set: { seq: 1000 } },
       { new: true }
     );
     seqNum = updated.seq;
   }
 
-  let candidate = `${seqNum}/${mmyy}`;
+  let candidate = `${ddmm}/${seqNum}`;
 
   // Extra safety guard in case candidate was inserted manually or previously exists
   let exists = await Order.exists({ orderNumber: candidate });
@@ -50,7 +49,7 @@ async function getNextOrderNumber(date = new Date()) {
       { $inc: { seq: 1 } },
       { new: true }
     );
-    candidate = `${bumped.seq}/${mmyy}`;
+    candidate = `${ddmm}/${bumped.seq}`;
     exists = await Order.exists({ orderNumber: candidate });
   }
 
@@ -90,9 +89,32 @@ async function createOrder(items) {
       throw err;
     }
 
-    const quantity = parseInt(ordered.quantity, 10);
-    if (isNaN(quantity) || quantity < 1) {
+    const rawQuantity = ordered.quantity;
+    if (
+      rawQuantity === undefined ||
+      rawQuantity === null ||
+      typeof rawQuantity === 'boolean' ||
+      typeof rawQuantity === 'object' ||
+      isNaN(Number(rawQuantity)) ||
+      !Number.isInteger(Number(rawQuantity))
+    ) {
+      const err = new Error(`Quantity for item "${ordered.itemId}" must be a valid positive integer.`);
+      err.code = 'VALIDATION_ERROR';
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const quantity = Number(rawQuantity);
+    if (quantity < 1) {
       const err = new Error(`Quantity for item "${ordered.itemId}" must be a positive integer.`);
+      err.code = 'VALIDATION_ERROR';
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const MAX_ITEM_QUANTITY = 50;
+    if (quantity > MAX_ITEM_QUANTITY) {
+      const err = new Error(`Quantity for item "${ordered.itemId}" cannot exceed ${MAX_ITEM_QUANTITY} per order.`);
       err.code = 'VALIDATION_ERROR';
       err.statusCode = 400;
       throw err;
