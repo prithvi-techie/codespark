@@ -69,19 +69,11 @@ class AdminDashboard {
   }
 
   setupBackendSettingsBanner() {
-    // Allows toggling backend URL or staff token on deployed environments (Vercel -> Render)
+    // Brand header click simply scrolls to top of dashboard
     const brandWrapper = document.querySelector('.brand-wrapper');
     if (brandWrapper) {
-      brandWrapper.style.cursor = 'pointer';
-      brandWrapper.title = 'Click to view / configure Backend API URL';
       brandWrapper.addEventListener('click', () => {
-        const currentUrl = Api.getBaseUrl();
-        const newUrl = prompt('Backend API URL (Render or Localhost):', currentUrl);
-        if (newUrl && newUrl.trim() !== currentUrl) {
-          Api.setBaseUrl(newUrl.trim());
-          this.showToast('Backend API URL updated to ' + newUrl.trim(), 'success');
-          this.loadDashboardData(true);
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     }
   }

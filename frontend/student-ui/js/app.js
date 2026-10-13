@@ -84,17 +84,9 @@ class StudentApp {
 
     const brandHome = document.getElementById('brand-home-link');
     if (brandHome) {
-      brandHome.title = 'Click to view / configure Backend API URL';
       brandHome.addEventListener('click', (e) => {
         e.preventDefault();
-        const current = Api.getBaseUrl();
-        const input = prompt('Backend API URL (Render or Localhost):', current);
-        if (input && input.trim() !== current) {
-          Api.setBaseUrl(input.trim());
-          this.showToast('Backend API URL updated to ' + input.trim(), 'success');
-          this.loadMenu();
-          this.refreshRushDisplay();
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     }
   }
