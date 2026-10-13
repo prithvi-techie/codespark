@@ -1,0 +1,19 @@
+{
+  "name": "codespark-smart-canteen",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Smart Canteen Order & Rush Tracker",
+  "scripts": {
+    "start": "npx serve frontend/student-ui -p 3000",
+    "start:student": "npx serve frontend/student-ui -p 3000",
+    "start:admin": "npx serve frontend/admin-ui -p 3001",
+    "test": "node test/runner.js"
+  },
+  "keywords": [
+    "canteen",
+    "tracker",
+    "hackathon"
+  ],
+  "author": "Team CodeSpark",
+  "license": "ISC"
+}

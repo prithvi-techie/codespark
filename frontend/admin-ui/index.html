@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Canteen | Staff & Admin Dashboard</title>
+  
+  <!-- Fonts: Outfit (headings) & Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <div class="brand-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+        </div>
+        <div class="brand-title">
+          CodeSpark Kitchen
+          <span class="brand-subtitle">Staff & Admin Order Manager</span>
+        </div>
+      </div>
+
+      <!-- Current Rush Level Indicator -->
+      <div id="rush-badge" class="rush-badge-widget rush-low">
+        <span class="rush-pulse-dot"></span>
+        <span id="rush-text">Current Rush: Low</span>
+      </div>
+
+      <!-- Staff Navigation Tabs -->
+      <nav class="nav-links">
+        <button class="nav-btn active" data-tab="active-orders">
+          <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Active Orders
+        </button>
+        <button class="nav-btn" data-tab="menu-management">
+          <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+          </svg>
+          Food Availability
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Staff Summary Overview Card -->
+    <section class="hero-banner" style="margin-bottom: 1.5rem;">
+      <div class="hero-text">
+        <h1>Kitchen Order Overview</h1>
+        <p>Monitor customer orders, change order progress, and mark sold-out food items.</p>
+      </div>
+      <div class="hero-rush-card">
+        <span class="rush-title">Kitchen Queue</span>
+        <div class="rush-status-row">
+          <span class="rush-level-text" id="current-rush-level">Low Rush</span>
+          <span class="rush-count-pill"><strong id="active-orders-count">0</strong> active orders</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1: ACTIVE ORDERS -->
+    <section id="tab-active-orders" class="tab-content active">
+      <div class="orders-page-container" style="max-width: 900px;">
+        <div class="section-header">
+          <h2 class="section-title">Active Food Orders</h2>
+          <span style="font-size:0.85rem;color:var(--text-muted);">Updates automatically</span>
+        </div>
+
+        <!-- Orders List Container -->
+        <div class="orders-list" id="admin-orders-list">
+          <!-- Rendered by admin.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: MENU FOOD AVAILABILITY & MANAGEMENT -->
+    <section id="tab-menu-management" class="tab-content">
+      <div class="orders-page-container" style="max-width: 900px;">
+        <div class="section-header" style="flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h2 class="section-title">Food Availability & Management</h2>
+            <span style="font-size:0.85rem;color:var(--text-muted);">Set items as Food Available or Sold Out, or add new items</span>
+          </div>
+          <button id="btn-open-add-food" class="btn-checkout" style="width: auto; padding: 0.55rem 1.1rem; font-size: 0.9rem; margin-top: 0;">
+            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add Food Item
+          </button>
+        </div>
+
+        <div class="menu-grid" id="admin-menu-list">
+          <!-- Rendered by admin.js -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Add Food Item Modal -->
+  <div class="modal-overlay" id="add-food-modal" role="dialog" aria-modal="true">
+    <div class="modal-box" style="max-width: 520px; text-align: left;">
+      <h2 class="modal-title" style="text-align: left; margin-bottom: 0.25rem;">Add Food Item</h2>
+      <p style="color:var(--text-muted);font-size:0.85rem; margin-bottom: 1.25rem;">Add a new dish to the canteen menu for students.</p>
+
+      <form id="add-food-form">
+        <div style="margin-bottom: 0.85rem;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom: 0.25rem;">Food Name *</label>
+          <input type="text" id="food-name-input" class="order-lookup-input" style="width:100%;" placeholder="e.g. Veg Cheese Roll" required>
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom: 0.25rem;">Food Image</label>
+          <input type="file" id="food-image-file" accept="image/*" style="display:block; font-size:0.85rem; margin-bottom: 0.4rem;">
+          <div id="image-preview-container" style="width: 100%; height: 140px; background: var(--bg-muted); border-radius: var(--border-radius); border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <span id="preview-placeholder" style="font-size:0.8rem; color:var(--text-muted);">No image selected (default photo will be used)</span>
+            <img id="food-image-preview" src="" alt="Preview" style="display:none; width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 0.85rem;">
+          <div>
+            <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom: 0.25rem;">Price (₹) *</label>
+            <input type="number" id="food-price-input" class="order-lookup-input" style="width:100%;" min="0" step="1" placeholder="50" required>
+          </div>
+          <div>
+            <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom: 0.25rem;">Category</label>
+            <select id="food-category-select" class="order-lookup-input" style="width:100%;">
+              <option value="Snacks">Snacks</option>
+              <option value="Burgers">Burgers</option>
+              <option value="South Indian">South Indian</option>
+              <option value="Chinese">Chinese</option>
+              <option value="Beverages">Beverages</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom: 0.25rem;">Description</label>
+          <textarea id="food-desc-input" class="order-lookup-input" style="width:100%; height: 60px; resize: vertical;" placeholder="Short tasty description..."></textarea>
+        </div>
+
+        <div style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+          <input type="checkbox" id="food-avail-checkbox" checked style="width: 16px; height: 16px;">
+          <label for="food-avail-checkbox" style="font-size:0.9rem; font-weight:600; cursor: pointer;">Food Available for ordering</label>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 1rem;">
+          <button type="button" id="btn-cancel-add-food" class="btn-modal-action btn-modal-secondary">Cancel</button>
+          <button type="submit" class="btn-modal-action btn-modal-primary">Save Food Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>© 2026 CodeSpark Smart Canteen • Staff & Admin Interface</p>
+  </footer>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

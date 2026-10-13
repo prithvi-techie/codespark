@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Canteen | Student Portal</title>
+  
+  <!-- Fonts: Outfit (headings) & Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="#" class="brand-wrapper" id="brand-home-link">
+        <div class="brand-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </div>
+        <div class="brand-title">
+          CodeSpark Canteen
+          <span class="brand-subtitle">Smart Food Order & Rush Tracker</span>
+        </div>
+      </a>
+
+      <!-- Live Rush Badge Indicator in Header -->
+      <div id="rush-level-badge" class="rush-badge-widget rush-low" title="Live canteen rush level calculated from active orders">
+        <span class="rush-pulse-dot"></span>
+        <span id="rush-text-nav">Low Rush (0 active)</span>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-links">
+        <button class="nav-btn active" data-tab="menu">
+          <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+          </svg>
+          Menu
+        </button>
+        <button class="nav-btn" data-tab="orders">
+          <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+          Track Orders
+        </button>
+        <button class="nav-btn cart-nav-btn" data-tab="menu" onclick="document.querySelector('.cart-sidebar').scrollIntoView({behavior:'smooth'})">
+          <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          Tray <span class="cart-badge" id="cart-count-badge" style="display:none;">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- Main Hero Banner -->
+    <section class="hero-banner">
+      <div class="hero-text">
+        <h1>Skip the cafeteria queue.</h1>
+        <p>Order fresh meals right from your device and pick up when ready.</p>
+      </div>
+      <div class="hero-rush-card">
+        <span class="rush-title">Estimated Canteen Rush</span>
+        <div class="rush-status-row">
+          <span class="rush-level-text" id="rush-level-hero">Low Rush</span>
+          <span class="rush-count-pill" id="rush-count-hero">0 active</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1: MENU & CART -->
+    <section id="tab-menu" class="tab-content active">
+      <div class="canteen-grid">
+        
+        <!-- Left Column: Menu Items -->
+        <div class="menu-section">
+          <div class="section-header">
+            <h2 class="section-title">Today's Menu</h2>
+            <div class="menu-filter-bar">
+              <button class="nav-btn category-chip active" data-category="All">All</button>
+              <button class="nav-btn category-chip" data-category="Snacks">Snacks</button>
+              <button class="nav-btn category-chip" data-category="Burgers">Burgers</button>
+              <button class="nav-btn category-chip" data-category="South Indian">South Indian</button>
+              <button class="nav-btn category-chip" data-category="Chinese">Chinese</button>
+              <button class="nav-btn category-chip" data-category="Beverages">Beverages</button>
+            </div>
+          </div>
+
+          <!-- Dynamic Food Grid -->
+          <div class="menu-grid" id="menu-grid">
+            <!-- Rendered by menu.js -->
+          </div>
+        </div>
+
+        <!-- Right Column: Shopping Cart / Tray Sidebar -->
+        <aside class="cart-sidebar" aria-label="Your Food Tray">
+          <div class="cart-header">
+            <h2>
+              <svg style="width:20px;height:20px;color:var(--primary-orange);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+              Your Tray <span id="cart-items-count" style="font-size:0.9rem;color:var(--text-muted);">(0)</span>
+            </h2>
+            <button id="btn-clear-cart" class="btn-clear-cart">Clear Tray</button>
+          </div>
+
+          <!-- Cart items list -->
+          <div class="cart-items-list" id="cart-items-list">
+            <!-- Rendered by app.js / cart.js -->
+          </div>
+
+          <!-- Cart calculations summary -->
+          <div class="cart-summary">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="cart-subtotal">₹0</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total Payable</span>
+              <span id="cart-total">₹0</span>
+            </div>
+            <p class="provisional-note">*Provisional total; validated upon order placement.</p>
+            
+            <button id="btn-checkout" class="btn-checkout" disabled>
+              Tray is Empty
+            </button>
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: READ-ONLY STUDENT ORDER TRACKING -->
+    <section id="tab-orders" class="tab-content">
+      <div class="orders-page-container">
+        
+        <div class="section-header">
+          <h2 class="section-title">My Orders & Live Progress</h2>
+        </div>
+
+        <!-- List of Tracked Student Orders (Read-Only) -->
+        <div class="orders-list" id="orders-list-container">
+          <!-- Rendered by orders.js -->
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Order Confirmation Modal -->
+  <div class="modal-overlay" id="order-confirmation-modal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-success-icon">
+        <svg style="width:36px;height:36px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h2 class="modal-title">Order Received!</h2>
+      <p style="color:var(--text-muted);font-size:0.95rem;">Please present this order number at the canteen pickup counter.</p>
+      
+      <div>
+        <span class="modal-order-number" id="modal-order-number">ORD-0000</span>
+      </div>
+
+      <div class="modal-body-details">
+        <div style="font-weight:600;margin-bottom:6px;color:var(--text-main);">Order Items:</div>
+        <div id="modal-items-summary"></div>
+        <div style="margin-top:8px;padding-top:6px;border-top:1px dashed var(--border-color);display:flex;justify-content:space-between;font-weight:700;">
+          <span>Total Paid</span>
+          <span id="modal-order-total">₹0</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-modal-close" class="btn-modal-action btn-modal-secondary">Order More</button>
+        <button id="btn-modal-track" class="btn-modal-action btn-modal-primary">Track Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>© 2026 CodeSpark Smart Canteen • Built for quick, queue-free campus dining.</p>
+  </footer>
+
+  <!-- App Scripts (ES Modules) -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
