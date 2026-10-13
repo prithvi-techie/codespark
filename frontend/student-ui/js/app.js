@@ -168,19 +168,22 @@ class StudentApp {
   }
 
   updateRushUI(activeCount, rushLevel) {
-    // Header mini badge
+    // Header mini badge: show only rush level (High, Medium, or Low)
     if (this.elements.rushLevelBadge && this.elements.rushTextNav) {
       this.elements.rushLevelBadge.className = `rush-badge-widget rush-${rushLevel.toLowerCase()}`;
-      this.elements.rushTextNav.textContent = `${rushLevel} Rush (${activeCount} active)`;
+      this.elements.rushTextNav.textContent = `${rushLevel} Rush`;
     }
 
-    // Hero banner rush display
-    if (this.elements.rushLevelHero && this.elements.rushCountHero) {
+    // Hero banner rush display: show only rush level (High, Medium, or Low)
+    if (this.elements.rushLevelHero) {
       this.elements.rushLevelHero.textContent = `${rushLevel} Rush`;
       this.elements.rushLevelHero.style.color =
         rushLevel === 'High' ? 'var(--rush-high)' :
         rushLevel === 'Medium' ? 'var(--rush-medium)' : 'var(--rush-low)';
-      this.elements.rushCountHero.textContent = `${activeCount} in queue`;
+    }
+    if (this.elements.rushCountHero) {
+      this.elements.rushCountHero.style.display = 'none';
+      this.elements.rushCountHero.textContent = '';
     }
   }
 
@@ -241,7 +244,7 @@ class StudentApp {
     if (this.elements.btnCheckout) {
       if (Cart.isEmpty()) {
         this.elements.btnCheckout.disabled = true;
-        this.elements.btnCheckout.textContent = "Tray is Empty";
+        this.elements.btnCheckout.textContent = "Cart is Empty";
       } else if (hasUnavailable) {
         this.elements.btnCheckout.disabled = true;
         this.elements.btnCheckout.textContent = "Remove Sold Out Items";
@@ -260,7 +263,7 @@ class StudentApp {
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
           </svg>
-          <p>Your tray is empty.</p>
+          <p>Your cart is empty.</p>
           <span style="font-size:0.8rem;color:var(--text-light);">Select food items from the menu</span>
         </div>
       `;

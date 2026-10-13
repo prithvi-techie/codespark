@@ -32,7 +32,7 @@
       <!-- Live Rush Badge Indicator in Header -->
       <div id="rush-level-badge" class="rush-badge-widget rush-low" title="Live canteen rush level calculated from active orders">
         <span class="rush-pulse-dot"></span>
-        <span id="rush-text-nav">Low Rush (0 active)</span>
+        <span id="rush-text-nav">Low Rush</span>
       </div>
 
       <!-- Navigation Tabs -->
@@ -49,19 +49,12 @@
           </svg>
           Track Orders
         </button>
-        <button class="nav-btn cart-nav-btn" data-tab="menu" onclick="document.querySelector('.cart-sidebar').scrollIntoView({behavior:'smooth'})">
+        <button class="nav-btn cart-nav-btn" data-tab="cart" id="btn-nav-cart" aria-label="Open Cart">
           <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
           </svg>
-          Tray <span class="cart-badge" id="cart-count-badge" style="display:none;">0</span>
+          Cart <span class="cart-badge" id="cart-count-badge" style="display:none;">0</span>
         </button>
-        <a href="../admin-ui/" class="nav-btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:4px; background: #fff3e0; color: #c2410c; border: 1px solid #fed7aa;" title="Open Kitchen Staff Dashboard">
-          <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          Kitchen Admin
-        </a>
       </nav>
     </div>
   </header>
@@ -88,12 +81,12 @@
             <span class="food-note-title">GOOD FOOD</span>
             <small>GOOD MOOD ✳</small>
           </div>
-          <!-- Integrated Live Rush Stats Card -->
+          <!-- Integrated Live Rush Stats Card (Rush level only) -->
           <div class="floating-rating hero-rush-widget" title="Live canteen rush level calculated from active orders">
             <div class="rush-title-small">CAMPUS RUSH</div>
             <div class="rush-status-row">
               <span class="rush-level-text" id="rush-level-hero">Low Rush</span>
-              <span class="rush-count-pill" id="rush-count-hero">0 active</span>
+              <span class="rush-count-pill" id="rush-count-hero" style="display:none;"></span>
             </div>
           </div>
         </div>
@@ -122,11 +115,11 @@
       </div>
     </div>
 
-    <!-- TAB 1: MENU & CART -->
+    <!-- TAB 1: MENU -->
     <section id="tab-menu" class="tab-content active">
-      <div class="canteen-grid">
+      <div class="canteen-menu-container">
         
-        <!-- Left Column: Menu Items -->
+        <!-- Menu Items Full Width Grid -->
         <div class="menu-section">
           <div class="section-header">
             <h2 class="section-title">Today's Menu</h2>
@@ -148,18 +141,24 @@
           </div>
         </div>
 
-        <!-- Right Column: Shopping Cart / Tray Sidebar -->
-        <aside class="cart-sidebar" aria-label="Your Food Tray">
-          <div class="cart-header">
-            <h2>
-              <svg style="width:20px;height:20px;color:var(--primary-orange);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-              </svg>
-              Your Tray <span id="cart-items-count" style="font-size:0.9rem;color:var(--text-muted);">(0)</span>
-            </h2>
-            <button id="btn-clear-cart" class="btn-clear-cart">Clear Tray</button>
-          </div>
+      </div>
+    </section>
 
+    <!-- TAB 2: SEPARATE CART PANEL -->
+    <section id="tab-cart" class="tab-content">
+      <div class="cart-page-container" style="max-width: 680px; margin: 0 auto;">
+        
+        <div class="section-header">
+          <h2 class="section-title" style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg style="width:24px;height:24px;color:var(--lime);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+            Your Cart <span id="cart-items-count" style="font-size:1rem;color:var(--text-muted);font-weight:600;">(0)</span>
+          </h2>
+          <button id="btn-clear-cart" class="btn-clear-cart">Clear Cart</button>
+        </div>
+
+        <aside class="cart-sidebar" aria-label="Your Cart" style="position: static; max-height: none; width: 100%;">
           <!-- Cart items list -->
           <div class="cart-items-list" id="cart-items-list">
             <!-- Rendered by app.js / cart.js -->
@@ -178,7 +177,7 @@
             <p class="provisional-note">*Provisional total; validated upon order placement.</p>
             
             <button id="btn-checkout" class="btn-checkout" disabled>
-              Tray is Empty
+              Cart is Empty
             </button>
           </div>
         </aside>

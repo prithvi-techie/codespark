@@ -19,15 +19,38 @@ class AdminDashboard {
   }
 
   async init() {
+    this.checkAuth();
     this.setupTabs();
     this.setupFoodManagementModal();
     this.setupBackendSettingsBanner();
+    this.setupLogout();
     await this.loadDashboardData();
 
     // Auto-refresh orders every 5 seconds to sync live kitchen queue
     this.refreshTimer = setInterval(() => {
       this.loadDashboardData(true);
     }, 5000);
+  }
+
+  checkAuth() {
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('codespark_staff_token') : null;
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+  }
+
+  setupLogout() {
+    const btn = document.getElementById('btn-admin-logout');
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Are you sure you want to log out of Kitchen Admin?')) {
+          localStorage.removeItem('codespark_staff_token');
+          localStorage.removeItem('codespark_staff_user');
+          window.location.href = 'login.html';
+        }
+      });
+    }
   }
 
   setupTabs() {

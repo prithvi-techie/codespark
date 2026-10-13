@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | CodeSpark Kitchen</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .login-page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: #0f1710;
+      color: #ffffff;
+      box-sizing: border-box;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: #182219;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+    .login-brand-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .login-icon {
+      width: 52px;
+      height: 52px;
+      background: #d9ff4b;
+      color: #101710;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 24px rgba(217, 255, 75, 0.25);
+    }
+    .login-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+    .login-subtitle {
+      font-size: 0.88rem;
+      color: #a4ae9d;
+    }
+    .login-form-group {
+      margin-bottom: 1.25rem;
+    }
+    .login-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e2e8df;
+      margin-bottom: 0.45rem;
+    }
+    .login-input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: #101710;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .login-input:focus {
+      border-color: #d9ff4b;
+      box-shadow: 0 0 0 3px rgba(217, 255, 75, 0.2);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 0.95rem;
+      background: #d9ff4b;
+      color: #101710;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      transition: transform 0.15s, background-color 0.15s;
+    }
+    .login-btn:hover {
+      background: #cbf338;
+      transform: translateY(-1px);
+    }
+    .login-btn:disabled {
+      background: #4a5444;
+      color: #9aa493;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .login-error-msg {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      display: none;
+    }
+    .login-footer-links {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #9aa493;
+    }
+    .login-footer-links a {
+      color: #d9ff4b;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .login-footer-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-page-wrapper">
+    <div class="login-card">
+      <div class="login-brand-header">
+        <div class="login-icon">
+          <svg style="width:28px;height:28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+        </div>
+        <h1 class="login-title">Kitchen Admin Login</h1>
+        <p class="login-subtitle">Sign in to manage orders and menu availability</p>
+      </div>
+
+      <div id="login-error" class="login-error-msg" role="alert"></div>
+
+      <form id="admin-login-form">
+        <div class="login-form-group">
+          <label class="login-label" for="username">Username</label>
+          <input type="text" id="username" class="login-input" placeholder="admin" required autocomplete="username">
+        </div>
+
+        <div class="login-form-group">
+          <label class="login-label" for="password">Password</label>
+          <input type="password" id="password" class="login-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="btn-login-submit" class="login-btn">Sign In to Dashboard</button>
+      </form>
+
+      <div class="login-footer-links">
+        <a href="../student-ui/">← Return to Student Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Api } from './js/api.js';
+
+    const form = document.getElementById('admin-login-form');
+    const userInp = document.getElementById('username');
+    const passInp = document.getElementById('password');
+    const errBox = document.getElementById('login-error');
+    const submitBtn = document.getElementById('btn-login-submit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errBox.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying credentials...';
+
+      try {
+        const username = userInp.value.trim();
+        const password = passInp.value;
+        const res = await Api.staffLogin(username, password);
+
+        if (res && res.token) {
+          window.location.href = 'index.html';
+        } else {
+          throw new Error('Authentication failed.');
+        }
+      } catch (err) {
+        errBox.textContent = err.message || 'Invalid username or password.';
+        errBox.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In to Dashboard';
+      }
+    });
+  </script>
+</body>
+</html>

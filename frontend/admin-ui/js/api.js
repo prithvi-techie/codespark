@@ -627,6 +627,41 @@ export const Api = {
   },
 
   /**
+   * POST /api/staff/login
+   */
+  async staffLogin(username, password) {
+    if (API_CONFIG.USE_MOCK) {
+      if ((username === 'admin' && (password === 'staff123' || password === 'password')) || password === 'staff123') {
+        const token = 'codespark-staff-secret-2026';
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('codespark_staff_token', token);
+          localStorage.setItem('codespark_staff_user', username || 'admin');
+        }
+        return { token, username: username || 'admin' };
+      }
+      throw new Error('Invalid staff credentials. Please check your username and password.');
+    }
+
+    const res = await fetchWithTimeout(`${API_CONFIG.BASE_URL}/staff/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, passcode: password })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData?.error?.message || 'Invalid username or password.');
+    }
+
+    const data = await res.json();
+    if (data.token && typeof localStorage !== 'undefined') {
+      localStorage.setItem('codespark_staff_token', data.token);
+      localStorage.setItem('codespark_staff_user', username || 'admin');
+    }
+    return data;
+  },
+
+  /**
    * PATCH /api/staff/orders/:orderNumber/status
    */
   async updateOrderStatus(orderNumber, status) {

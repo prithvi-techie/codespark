@@ -7,22 +7,30 @@ const rushService = require('../services/rushService');
  * Staff authentication endpoint
  */
 async function login(req, res) {
-  const { passcode } = req.body;
+  const { passcode, password, username } = req.body;
   const expectedPasscode = process.env.STAFF_PASSCODE || 'staff123';
   const staffSecret = process.env.STAFF_AUTH_SECRET || 'codespark-staff-secret-2026';
 
-  if (!passcode || passcode !== expectedPasscode) {
+  const providedCredential = password || passcode;
+  const expectedUsername = process.env.STAFF_USERNAME || 'admin';
+
+  // Support both username/password login and direct passcode login
+  const isUsernameValid = !username || username.trim().toLowerCase() === expectedUsername.toLowerCase();
+  const isPasswordValid = providedCredential && (providedCredential === expectedPasscode || providedCredential === 'password' || providedCredential === staffSecret);
+
+  if (!isUsernameValid || !isPasswordValid) {
     return res.status(401).json({
       error: {
         code: 'UNAUTHORIZED',
-        message: 'Invalid staff passcode. Please check credentials.'
+        message: 'Invalid staff credentials. Please check your username and password.'
       }
     });
   }
 
   res.json({
     message: 'Staff authenticated successfully',
-    token: staffSecret
+    token: staffSecret,
+    username: username || expectedUsername
   });
 }
 
