@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Canteen | Student Portal</title>
   
-  <!-- Fonts: Outfit (headings) & Inter (body) -->
+  <!-- Fonts: Outfit (headings) & DM Sans / Inter (body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -69,20 +69,58 @@
   <!-- Main Container -->
   <main class="main-content">
 
-    <!-- Main Hero Banner -->
-    <section class="hero-banner">
-      <div class="hero-text">
-        <h1>Skip the cafeteria queue.</h1>
-        <p>Order fresh meals right from your device and pick up when ready.</p>
-      </div>
-      <div class="hero-rush-card">
-        <span class="rush-title">Estimated Canteen Rush</span>
-        <div class="rush-status-row">
-          <span class="rush-level-text" id="rush-level-hero">Low Rush</span>
-          <span class="rush-count-pill" id="rush-count-hero">0 active</span>
+    <!-- Main Hero Section (New Design) -->
+    <section class="hero" id="home">
+      <div class="hero-bg"></div>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <span class="eyebrow">✳ Fresh · Fast · For You</span>
+          <h1>Good Food.<br><span>Brighter</span> Days!</h1>
+          <p>Your campus food experience, reimagined. Discover your favourites, skip the queue and make every break delicious.</p>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="document.querySelector('[data-tab=\'menu\']').click(); document.getElementById('menu-grid').scrollIntoView({behavior:'smooth'})">Explore Menu ↗</button>
+            <button class="btn-outline" onclick="document.querySelector('[data-tab=\'orders\']').click(); document.getElementById('tab-orders').scrollIntoView({behavior:'smooth'})">▤ View My Orders</button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img class="hero-food" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=85" alt="Fresh burger with fries">
+          <div class="food-note">
+            <span class="food-note-title">GOOD FOOD</span>
+            <small>GOOD MOOD ✳</small>
+          </div>
+          <!-- Integrated Live Rush Stats Card -->
+          <div class="floating-rating hero-rush-widget" title="Live canteen rush level calculated from active orders">
+            <div class="rush-title-small">CAMPUS RUSH</div>
+            <div class="rush-status-row">
+              <span class="rush-level-text" id="rush-level-hero">Low Rush</span>
+              <span class="rush-count-pill" id="rush-count-hero">0 active</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- Trust / Benefits Strip -->
+    <div class="benefits-wrap">
+      <div class="benefits">
+        <div class="benefit">
+          <div class="benefit-icon">🍔</div>
+          <div><h3>Delicious Variety</h3><p>Snacks to full meals</p></div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">⚡</div>
+          <div><h3>Quick Ordering</h3><p>Less queue, more you</p></div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">🌿</div>
+          <div><h3>Fresh & Hygienic</h3><p>Quality you can trust</p></div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">☺</div>
+          <div><h3>Made for Students</h3><p>Student-friendly prices</p></div>
+        </div>
+      </div>
+    </div>
 
     <!-- TAB 1: MENU & CART -->
     <section id="tab-menu" class="tab-content active">
