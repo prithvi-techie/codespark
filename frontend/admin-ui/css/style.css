@@ -92,6 +92,7 @@ h1, h2, h3, h4, .brand-title, .section-title {
   align-items: center;
   justify-content: center;
   color: #fff;
+  flex-shrink: 0;
 }
 
 .brand-icon svg {
@@ -115,8 +116,9 @@ h1, h2, h3, h4, .brand-title, .section-title {
 
 /* Rush Indicator Widget */
 .rush-badge-widget {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.6rem;
   background-color: var(--bg-muted);
   padding: 0.4rem 0.85rem;
@@ -124,12 +126,17 @@ h1, h2, h3, h4, .brand-title, .section-title {
   font-size: 0.85rem;
   font-weight: 500;
   border: 1px solid var(--border-color);
+  min-width: 175px;
+  flex-shrink: 0;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .rush-pulse-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  flex-shrink: 0;
   background-color: var(--rush-low);
   box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
   animation: pulse 2s infinite;
@@ -319,7 +326,9 @@ h1, h2, h3, h4, .brand-title, .section-title {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  min-width: 220px;
+  min-width: 240px;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .hero-rush-card .rush-title {
@@ -334,12 +343,15 @@ h1, h2, h3, h4, .brand-title, .section-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .rush-level-text {
   font-family: 'Outfit', sans-serif;
   font-size: 1.35rem;
   font-weight: 700;
+  min-width: 100px;
+  white-space: nowrap;
 }
 
 .rush-count-pill {
@@ -348,6 +360,10 @@ h1, h2, h3, h4, .brand-title, .section-title {
   padding: 0.2rem 0.6rem;
   border-radius: var(--border-radius-full);
   background-color: var(--bg-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: center;
+  min-width: 65px;
 }
 
 .rush-hint {
@@ -432,6 +448,9 @@ h1, h2, h3, h4, .brand-title, .section-title {
   padding: 0.2rem 0.55rem;
   border-radius: var(--border-radius-full);
   backdrop-filter: blur(4px);
+  min-width: 72px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .badge-available {
@@ -638,8 +657,10 @@ h1, h2, h3, h4, .brand-title, .section-title {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
-  min-width: 50px;
+  min-width: 60px;
   text-align: right;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .cart-empty-state {
@@ -793,6 +814,7 @@ h1, h2, h3, h4, .brand-title, .section-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 1rem;
   padding-bottom: 0.85rem;
   border-bottom: 1px solid var(--border-color);
@@ -802,6 +824,8 @@ h1, h2, h3, h4, .brand-title, .section-title {
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-main);
+  word-break: break-all;
+  min-width: 0;
 }
 
 .order-status-badge {
@@ -811,6 +835,13 @@ h1, h2, h3, h4, .brand-title, .section-title {
   border-radius: var(--border-radius-full);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  min-width: 105px;
+  text-align: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .status-New {
@@ -867,8 +898,8 @@ h1, h2, h3, h4, .brand-title, .section-title {
 }
 
 .step-bubble {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: white;
   border: 2px solid var(--border-color);
@@ -879,6 +910,7 @@ h1, h2, h3, h4, .brand-title, .section-title {
   font-weight: 700;
   color: var(--text-light);
   transition: all 0.25s ease;
+  flex-shrink: 0;
 }
 
 .stepper-step.completed .step-bubble {
@@ -1078,44 +1110,209 @@ h1, h2, h3, h4, .brand-title, .section-title {
 }
 
 /* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .canteen-grid {
+    grid-template-columns: 1fr 300px;
+    gap: 1.25rem;
+  }
+}
+
 @media (max-width: 900px) {
   .canteen-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
   
   .cart-sidebar {
     position: static;
     margin-top: 1rem;
+    max-height: none;
+  }
+
+  .cart-items-list {
+    max-height: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-rush-card {
+    min-width: 100%;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .menu-filter-bar {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.4rem;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+
+  .category-chip {
+    flex-shrink: 0;
   }
 }
 
 @media (max-width: 640px) {
   .header-container {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 0.85rem;
     flex-wrap: wrap;
+    gap: 0.5rem;
   }
-  
+
+  .brand-wrapper {
+    gap: 0.5rem;
+  }
+
+  .brand-title {
+    font-size: 1.1rem;
+  }
+
   .rush-badge-widget {
     order: 3;
     width: 100%;
     justify-content: center;
-    margin-top: 0.35rem;
+    margin-top: 0.25rem;
+    min-width: 0;
+  }
+
+  .nav-links {
+    width: auto;
+    gap: 0.25rem;
+  }
+
+  .nav-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    min-height: 38px;
   }
   
   .menu-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
   .hero-banner {
-    padding: 1.25rem;
+    padding: 1.15rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-text h1 {
+    font-size: 1.35rem;
+  }
+
+  .order-card {
+    padding: 1rem;
+  }
+
+  .order-card-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .order-lookup-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+  }
+
+  .btn-lookup {
+    width: 100%;
+    min-height: 42px;
   }
   
+  .status-tracker-stepper {
+    margin: 1rem 0;
+  }
+
   .status-tracker-stepper::before {
-    left: 20px;
-    right: 20px;
+    left: 15px;
+    right: 15px;
   }
   
   .step-label {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
+  }
+
+  .modal-box {
+    padding: 1.25rem;
+    max-width: 95vw;
+  }
+
+  .modal-order-number {
+    font-size: 1.25rem;
+    padding: 0.35rem 0.75rem;
+    word-break: break-all;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-modal-action {
+    width: 100%;
+    min-height: 42px;
+  }
+
+  #toast-container {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .header-container {
+    padding: 0.5rem;
+  }
+
+  .brand-title {
+    font-size: 0.95rem;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .brand-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nav-btn {
+    padding: 0.35rem 0.45rem;
+    font-size: 0.75rem;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .card-actions {
+    width: 100%;
+  }
+
+  .btn-add-cart {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .card-qty-control {
+    width: 100%;
+    justify-content: space-between;
   }
 }

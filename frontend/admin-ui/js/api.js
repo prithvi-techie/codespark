@@ -308,7 +308,10 @@ export const Api = {
 
       const ordersRaw = localStorage.getItem(STORAGE_KEYS.ORDERS);
       const allOrders = ordersRaw ? JSON.parse(ordersRaw) : [];
-      const orderNumber = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
+      const now = new Date();
+      const mmyy = `${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getFullYear()).slice(-2)}`;
+      const seq = 100 + allOrders.length;
+      const orderNumber = `${seq}/${mmyy}`;
 
       const newOrder = {
         orderNumber,

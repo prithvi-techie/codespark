@@ -69,7 +69,7 @@ async function runIntegration() {
     };
     const orderRes = await Api.placeOrder(orderPayload);
     assert.ok(orderRes.order);
-    assert.match(orderRes.order.orderNumber, /^ORD-\d+$/);
+    assert.match(orderRes.order.orderNumber, /^(\d+\/\d{4}|ORD-\d+)$/);
     assert.equal(orderRes.order.status, "New");
     assert.equal(orderRes.order.total, sandwich.price * 2);
     const orderNumber = orderRes.order.orderNumber;

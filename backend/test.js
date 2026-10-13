@@ -17,6 +17,7 @@ const { app } = require('./server');
 const { connectDB, disconnectDB } = require('./config/db');
 const MenuItem = require('./models/MenuItem');
 const Order = require('./models/Order');
+const Counter = require('./models/Counter');
 const { seedInitialDataIfNeeded } = require('./seed');
 
 let server;
@@ -82,6 +83,7 @@ async function runTests() {
     await connectDB();
     await Order.deleteMany({});
     await MenuItem.deleteMany({});
+    await Counter.deleteMany({});
     await seedInitialDataIfNeeded();
 
     server = app.listen(0);
@@ -113,7 +115,8 @@ async function runTests() {
       items: [{ itemId: sandwich.id, quantity: 2 }]
     });
     assert(order1Res.status === 201, 'POST /api/orders returns HTTP 201 Created');
-    assert(order1Res.data.order && order1Res.data.order.orderNumber === 'ORD-1001', 'First order has orderNumber ORD-1001');
+    const order1Number = order1Res.data.order ? order1Res.data.order.orderNumber : '';
+    assert(/^100\/\d{4}$/.test(order1Number), `First order has orderNumber ${order1Number} matching ^100/\\d{4}$`);
     assert(order1Res.data.order.status === 'New', 'Initial status is "New"');
     assert(order1Res.data.order.total === 100, 'Server calculated total correctly: 2 * 50 = 100');
     assert(order1Res.data.order.items[0].subtotal === 100, 'Item subtotal correctly calculated: 100');
@@ -133,12 +136,12 @@ async function runTests() {
     // TEST SUITE 4: Order Tracking
     // ----------------------------------------------------
     console.log('\nTest Suite 4: Order Tracking');
-    const trackRes = await request('GET', '/api/orders/ORD-1001');
-    assert(trackRes.status === 200, 'GET /api/orders/ORD-1001 returns HTTP 200');
-    assert(trackRes.data.order.orderNumber === 'ORD-1001', 'Retrieved order matches orderNumber');
+    const trackRes = await request('GET', `/api/orders/${encodeURIComponent(order1Number)}`);
+    assert(trackRes.status === 200, `GET /api/orders/${order1Number} returns HTTP 200`);
+    assert(trackRes.data.order.orderNumber === order1Number, 'Retrieved order matches orderNumber');
     assert(trackRes.data.order.total === 100, 'Retrieved order has correct total');
 
-    const nonExistRes = await request('GET', '/api/orders/ORD-9999');
+    const nonExistRes = await request('GET', '/api/orders/999/9999');
     assert(nonExistRes.status === 404, 'Non-existent order returns HTTP 404');
     assert(nonExistRes.data.error.code === 'ORDER_NOT_FOUND', 'Error code is "ORDER_NOT_FOUND"');
 
@@ -166,17 +169,17 @@ async function runTests() {
     assert(authActiveRes.data.rushLevel === 'Low', 'Rush level is "Low" for 1 order (0-4 range)');
 
     // Status transition: New -> Preparing
-    const updateStatus1 = await request('PATCH', '/api/staff/orders/ORD-1001/status', { status: 'Preparing' }, authHeaders);
+    const updateStatus1 = await request('PATCH', `/api/staff/orders/${encodeURIComponent(order1Number)}/status`, { status: 'Preparing' }, authHeaders);
     assert(updateStatus1.status === 200, 'Updating status to "Preparing" returns HTTP 200');
-    assert(updateStatus1.data.order.status === 'Preparing', 'Order status is now "Preparing"');
+    assert(updateStatus1.data.order && updateStatus1.data.order.status === 'Preparing', 'Order status is now "Preparing"');
 
     // Status transition: Preparing -> Ready
-    const updateStatus2 = await request('PATCH', '/api/staff/orders/ORD-1001/status', { status: 'Ready' }, authHeaders);
-    assert(updateStatus2.data.order.status === 'Ready', 'Order status is now "Ready"');
+    const updateStatus2 = await request('PATCH', `/api/staff/orders/${encodeURIComponent(order1Number)}/status`, { status: 'Ready' }, authHeaders);
+    assert(updateStatus2.data.order && updateStatus2.data.order.status === 'Ready', 'Order status is now "Ready"');
 
     // Status transition: Ready -> Collected
-    const updateStatus3 = await request('PATCH', '/api/staff/orders/ORD-1001/status', { status: 'Collected' }, authHeaders);
-    assert(updateStatus3.data.order.status === 'Collected', 'Order status is now "Collected"');
+    const updateStatus3 = await request('PATCH', `/api/staff/orders/${encodeURIComponent(order1Number)}/status`, { status: 'Collected' }, authHeaders);
+    assert(updateStatus3.data.order && updateStatus3.data.order.status === 'Collected', 'Order status is now "Collected"');
 
     // Check that Collected order is NOT counted in active orders
     const activeAfterCollected = await request('GET', '/api/staff/orders/active', null, authHeaders);
@@ -237,6 +240,33 @@ async function runTests() {
       items: [{ itemId: sandwich.id, quantity: 1 }]
     });
     assert(orderAgain.status === 201, 'Order succeeds now that Veg Sandwich is available again');
+    const orderAgainNum = orderAgain.data.order ? orderAgain.data.order.orderNumber : '';
+    assert(/^101\/\d{4}$/.test(orderAgainNum), `Order placement after toggling availability receives sequential ID ${orderAgainNum} (101/MMYY)`);
+
+    // ----------------------------------------------------
+    // TEST SUITE 8: Sequential Order ID & Concurrency Safety
+    // ----------------------------------------------------
+    console.log('\nTest Suite 8: Sequential Order ID & Concurrency Safety');
+    const order2Res = await request('POST', '/api/orders', {
+      items: [{ itemId: sandwich.id, quantity: 1 }]
+    });
+    const order3Res = await request('POST', '/api/orders', {
+      items: [{ itemId: sandwich.id, quantity: 1 }]
+    });
+    const num2 = order2Res.data.order ? order2Res.data.order.orderNumber : '';
+    const num3 = order3Res.data.order ? order3Res.data.order.orderNumber : '';
+    assert(/^102\/\d{4}$/.test(num2), `Next order has sequential ID ${num2} (102/MMYY)`);
+    assert(/^103\/\d{4}$/.test(num3), `Next order has sequential ID ${num3} (103/MMYY)`);
+
+    // Concurrency test: place 5 orders in parallel
+    const concurrentPromises = Array.from({ length: 5 }, () => 
+      request('POST', '/api/orders', { items: [{ itemId: sandwich.id, quantity: 1 }] })
+    );
+    const concurrentResults = await Promise.all(concurrentPromises);
+    const concurrentIds = concurrentResults.map(r => r.data.order?.orderNumber);
+    const uniqueIds = new Set(concurrentIds);
+    assert(uniqueIds.size === 5, `Concurrent orders produced 5 distinct sequential IDs: ${concurrentIds.join(', ')}`);
+    assert(concurrentIds.every(id => /^\d+\/\d{4}$/.test(id)), 'All concurrent IDs match format SEQUENCE/MMYY');
 
     // ----------------------------------------------------
     // TEST SUMMARY

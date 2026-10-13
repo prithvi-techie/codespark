@@ -1,38 +1,56 @@
 const mongoose = require('mongoose');
 const MenuItem = require('../models/MenuItem');
 const Order = require('../models/Order');
+const Counter = require('../models/Counter');
 
 /**
- * Generate the next sequential order number (e.g., ORD-1001, ORD-1002)
+ * Format month and year as MMYY (e.g. 1026 for October 2026)
  */
-async function getNextOrderNumber() {
-  // Find the most recently created order with ORD- prefix
-  const lastOrder = await Order.findOne({ 
-    orderNumber: { $regex: /^ORD-\d+$/ } 
-  }).sort({ createdAt: -1 });
+function getMMYY(date = new Date()) {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear()).slice(-2);
+  return `${month}${year}`;
+}
 
-  let nextNum = 1001;
+/**
+ * Generate the next sequential order ID (e.g., 100/1026, 101/1026, 102/1026)
+ * Concurrency-safe atomic increment via MongoDB findOneAndUpdate.
+ * Starts from 100 and increments by 1 sequentially.
+ */
+async function getNextOrderNumber(date = new Date()) {
+  const mmyy = getMMYY(date);
 
-  if (lastOrder && lastOrder.orderNumber) {
-    const match = lastOrder.orderNumber.match(/^ORD-(\d+)$/);
-    if (match) {
-      const parsedNum = parseInt(match[1], 10);
-      if (!isNaN(parsedNum)) {
-        nextNum = parsedNum + 1;
-      }
-    }
-  } else {
-    // If no regex match, fallback to count
-    const count = await Order.countDocuments();
-    nextNum = 1001 + count;
+  // Atomically increment the sequence counter.
+  // Initial sequence counter starts at 100 on first order.
+  const counter = await Counter.findOneAndUpdate(
+    { _id: 'order_id_seq' },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+
+  let seqNum = counter.seq;
+  // If counter was newly created with default 99, $inc makes it 100.
+  // Ensure seqNum is at least 100.
+  if (seqNum < 100) {
+    const updated = await Counter.findOneAndUpdate(
+      { _id: 'order_id_seq' },
+      { $set: { seq: 100 } },
+      { new: true }
+    );
+    seqNum = updated.seq;
   }
 
-  // Ensure uniqueness in case of gaps or manual entries
-  let candidate = `ORD-${nextNum}`;
+  let candidate = `${seqNum}/${mmyy}`;
+
+  // Extra safety guard in case candidate was inserted manually or previously exists
   let exists = await Order.exists({ orderNumber: candidate });
   while (exists) {
-    nextNum++;
-    candidate = `ORD-${nextNum}`;
+    const bumped = await Counter.findOneAndUpdate(
+      { _id: 'order_id_seq' },
+      { $inc: { seq: 1 } },
+      { new: true }
+    );
+    candidate = `${bumped.seq}/${mmyy}`;
     exists = await Order.exists({ orderNumber: candidate });
   }
 

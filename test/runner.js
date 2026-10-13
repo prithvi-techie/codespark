@@ -186,7 +186,7 @@ async function runTests() {
   // 4. Order Placement & Tracking
   console.log("\n--- Suite 4: Order Placement & Tracking Integration ---");
 
-  await testAsync("Order Placement: Successful mock order creates valid structure and ORD-xxxx", async () => {
+  await testAsync("Order Placement: Successful mock order creates valid structure and sequential ORDER_ID/MMYY", async () => {
     Cart.clear();
     const item = { id: "item_101", name: "Veg Sandwich", price: 50, available: true };
     // ensure item 101 is available in mock menu
@@ -197,7 +197,7 @@ async function runTests() {
     const result = await Api.placeOrder(payload);
 
     assert.ok(result.order);
-    assert.match(result.order.orderNumber, /^ORD-\d{4}$/);
+    assert.match(result.order.orderNumber, /^(\d+\/\d{4}|ORD-\d+)$/);
     assert.equal(result.order.status, "New");
     assert.equal(result.order.total, 50);
     assert.equal(result.order.items.length, 1);

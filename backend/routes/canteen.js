@@ -26,8 +26,8 @@ router.get('/dashboard', orderController.getActiveOrders);
 // POST /api/orders - Place a new order
 router.post('/orders', orderController.placeOrder);
 
-// GET /api/orders/:orderNumber - Track an order
-router.get('/orders/:orderNumber', orderController.getOrder);
+// GET /api/orders/:orderNumber(*) - Track an order (supports formats like 101/1026 and legacy ORD-1001)
+router.get('/orders/:orderNumber(*)', orderController.getOrder);
 
 // ==========================================
 // 3. STAFF AUTHENTICATION
@@ -46,11 +46,11 @@ router.get('/staff/orders/active', staffAuth, orderController.getActiveOrders);
 // Alias: GET /api/staff/dashboard
 router.get('/staff/dashboard', staffAuth, orderController.getActiveOrders);
 
-// PATCH /api/staff/orders/:orderNumber/status - Update order status (New, Preparing, Ready, Collected)
-router.patch('/staff/orders/:orderNumber/status', staffAuth, orderController.updateOrderStatus);
+// PATCH /api/staff/orders/:orderNumber(*)/status - Update order status (New, Preparing, Ready, Collected)
+router.patch('/staff/orders/:orderNumber(*)/status', staffAuth, orderController.updateOrderStatus);
 
-// Alias: PATCH /api/orders/:orderNumber/status (supports both staff and un-prefixed paths)
-router.patch('/orders/:orderNumber/status', staffAuth, orderController.updateOrderStatus);
+// Alias: PATCH /api/orders/:orderNumber(*)/status (supports both staff and un-prefixed paths)
+router.patch('/orders/:orderNumber(*)/status', staffAuth, orderController.updateOrderStatus);
 
 // PATCH /api/staff/menu/:itemId/availability - Mark menu item available/unavailable
 router.patch('/staff/menu/:itemId/availability', staffAuth, menuController.updateAvailability);
