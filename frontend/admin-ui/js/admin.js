@@ -9,7 +9,7 @@
  * 5. Monitor real-time active-order count and rush level
  */
 
-import { Api, calculateRush } from '../../student-ui/js/api.js';
+import { Api, calculateRush } from './api.js';
 
 class AdminDashboard {
   constructor() {

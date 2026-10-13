@@ -42,7 +42,7 @@ function resolveApiBaseUrl() {
   }
 
   // Production Render default (or fallback to relative /api if proxied)
-  return 'https://smart-canteen-backend.onrender.com/api';
+  return 'https://smart-canteen-backend-gd1j.onrender.com/api';
 }
 
 export const API_CONFIG = {
