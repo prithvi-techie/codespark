@@ -2,15 +2,11 @@
  * admin.js - Canteen Staff & Admin Dashboard Controller
  * 
  * Functions:
- * 1. View active orders with order #, food items, quantities, and totals
- * 2. Update order status: New -> Preparing -> Ready -> Collected
- * 3. Mark food items Available or Sold Out (item availability)
- * 4. View active-order count and rush level
- * 
- * Compliant with:
- * - GET /staff/orders/active
- * - PATCH /staff/orders/:orderNumber/status
- * - PATCH /staff/menu/:itemId/availability
+ * 1. View active orders with order #, food items, quantities, and totals from Backend API
+ * 2. Update order status: New -> Preparing -> Ready -> Collected (PATCH /staff/orders/:orderNumber/status)
+ * 3. Mark food items Available or Sold Out (PATCH /staff/menu/:itemId/availability)
+ * 4. Add & Remove food items (POST /staff/menu, DELETE /staff/menu/:itemId)
+ * 5. Monitor real-time active-order count and rush level
  */
 
 import { Api, calculateRush } from '../../student-ui/js/api.js';
@@ -25,12 +21,13 @@ class AdminDashboard {
   async init() {
     this.setupTabs();
     this.setupFoodManagementModal();
+    this.setupBackendSettingsBanner();
     await this.loadDashboardData();
 
-    // Auto-refresh orders every 8 seconds
+    // Auto-refresh orders every 5 seconds to sync live kitchen queue
     this.refreshTimer = setInterval(() => {
       this.loadDashboardData(true);
-    }, 8000);
+    }, 5000);
   }
 
   setupTabs() {
@@ -46,6 +43,24 @@ class AdminDashboard {
         });
       });
     });
+  }
+
+  setupBackendSettingsBanner() {
+    // Allows toggling backend URL or staff token on deployed environments (Vercel -> Render)
+    const brandWrapper = document.querySelector('.brand-wrapper');
+    if (brandWrapper) {
+      brandWrapper.style.cursor = 'pointer';
+      brandWrapper.title = 'Click to view / configure Backend API URL';
+      brandWrapper.addEventListener('click', () => {
+        const currentUrl = Api.getBaseUrl();
+        const newUrl = prompt('Backend API URL (Render or Localhost):', currentUrl);
+        if (newUrl && newUrl.trim() !== currentUrl) {
+          Api.setBaseUrl(newUrl.trim());
+          this.showToast('Backend API URL updated to ' + newUrl.trim(), 'success');
+          this.loadDashboardData(true);
+        }
+      });
+    }
   }
 
   setupFoodManagementModal() {
@@ -146,27 +161,25 @@ class AdminDashboard {
 
   async loadDashboardData(silent = false) {
     try {
-      // 1. Fetch Menu Items
+      // 1. Fetch Menu Items from Backend
       const menuRes = await Api.getMenu();
       this.menuItems = menuRes.items || [];
       this.renderMenuManagement();
 
-      // 2. Fetch Orders for Staff
-      const ordersRaw = localStorage.getItem('codespark_orders_cache_v1');
-      const allOrders = ordersRaw ? JSON.parse(ordersRaw) : [];
-      
-      // Active orders = status !== 'Collected'
-      this.activeOrders = allOrders.filter(o => o.status !== 'Collected');
-      
-      // Compute Rush & Active Count
-      const rush = calculateRush(allOrders);
-      this.updateRushHeader(rush.activeCount, rush.rushLevel);
+      // 2. Fetch Active Orders and Rush Level from Backend
+      const activeData = await Api.getActiveOrders();
+      this.activeOrders = activeData.orders || [];
+      const activeCount = typeof activeData.activeCount === 'number' ? activeData.activeCount : this.activeOrders.length;
+      const rushLevel = activeData.rushLevel || 'Low';
+
+      // Update Header Indicator & Queue Statistics
+      this.updateRushHeader(activeCount, rushLevel);
 
       // Render Active Orders List
       this.renderOrders();
     } catch (err) {
       if (!silent) {
-        this.showToast('Could not load kitchen orders: ' + err.message, 'error');
+        this.showToast('Kitchen data sync warning: ' + err.message, 'error');
       }
     }
   }
@@ -420,7 +433,7 @@ class AdminDashboard {
 
   async updateOrderStatus(orderNumber, newStatus) {
     try {
-      Api._mockSetOrderStatus(orderNumber, newStatus);
+      await Api.updateOrderStatus(orderNumber, newStatus);
       this.showToast(`Order ${orderNumber} updated to ${newStatus}`, 'success');
       await this.loadDashboardData(true);
     } catch (err) {
@@ -430,7 +443,7 @@ class AdminDashboard {
 
   async toggleItemAvailability(itemId, newAvailable) {
     try {
-      Api._mockSetItemAvailability(itemId, newAvailable);
+      await Api.setItemAvailability(itemId, newAvailable);
       const stateWord = newAvailable ? 'Available' : 'Sold Out';
       this.showToast(`Food item updated to "${stateWord}"`, 'success');
       await this.loadDashboardData(true);

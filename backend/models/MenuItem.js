@@ -16,6 +16,15 @@ const menuItemSchema = new mongoose.Schema({
     required: [true, 'Item price is required'], 
     min: [0, 'Price must be non-negative'] 
   },
+  category: {
+    type: String,
+    default: 'Snacks',
+    trim: true
+  },
+  image: {
+    type: String,
+    default: ''
+  },
   available: { 
     type: Boolean, 
     default: true 

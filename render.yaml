@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: codespark-canteen-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_ORIGIN
+        value: "*"
+      - key: STAFF_AUTH_SECRET
+        value: codespark-staff-secret-2026
+      - key: STAFF_PASSCODE
+        value: staff123
+      # Optional: set your MongoDB Atlas connection string in Render Dashboard
+      # - key: MONGODB_URI
+      #   sync: false

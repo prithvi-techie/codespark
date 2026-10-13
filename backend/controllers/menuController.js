@@ -13,7 +13,9 @@ async function getMenu(req, res, next) {
       name: item.name,
       description: item.description,
       price: item.price,
-      available: item.available
+      available: item.available,
+      category: item.category || 'Snacks',
+      image: item.image || ''
     }));
 
     res.json({ items: formatted });
@@ -81,7 +83,7 @@ async function updateAvailability(req, res, next) {
  */
 async function createMenuItem(req, res, next) {
   try {
-    const { name, description, price, available } = req.body;
+    const { name, description, price, available, category, image } = req.body;
 
     if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({
@@ -106,7 +108,9 @@ async function createMenuItem(req, res, next) {
       name: name.trim(),
       description: description ? description.trim() : '',
       price: numPrice,
-      available: typeof available === 'boolean' ? available : true
+      available: typeof available === 'boolean' ? available : true,
+      category: category ? category.trim() : 'Snacks',
+      image: image || ''
     });
 
     await item.save();
@@ -117,8 +121,45 @@ async function createMenuItem(req, res, next) {
         name: item.name,
         description: item.description,
         price: item.price,
-        available: item.available
+        available: item.available,
+        category: item.category,
+        image: item.image
       }
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * DELETE /api/staff/menu/:itemId (Staff remove menu item)
+ */
+async function deleteMenuItem(req, res, next) {
+  try {
+    const { itemId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(itemId)) {
+      return res.status(400).json({
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: `Invalid menu item ID: "${itemId}".`
+        }
+      });
+    }
+
+    const deleted = await MenuItem.findByIdAndDelete(itemId);
+    if (!deleted) {
+      return res.status(404).json({
+        error: {
+          code: 'ITEM_NOT_FOUND',
+          message: 'Menu item not found.'
+        }
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Menu item "${deleted.name}" removed successfully.`
     });
   } catch (err) {
     next(err);
@@ -128,5 +169,6 @@ async function createMenuItem(req, res, next) {
 module.exports = {
   getMenu,
   updateAvailability,
-  createMenuItem
+  createMenuItem,
+  deleteMenuItem
 };

@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/frontend/student-ui/index.html" },
+    { "source": "/student", "destination": "/frontend/student-ui/index.html" },
+    { "source": "/admin", "destination": "/frontend/admin-ui/index.html" },
+    { "source": "/admin-ui", "destination": "/frontend/admin-ui/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" }
+      ]
+    }
+  ]
+}

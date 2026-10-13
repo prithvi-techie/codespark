@@ -4,29 +4,53 @@ const MenuItem = require('./models/MenuItem');
 const { connectDB } = require('./config/db');
 
 const initialItems = [
-  { 
-    name: 'Veg Sandwich', 
-    description: 'Fresh vegetable sandwich with mint chutney', 
-    price: 50, 
-    available: true 
+  {
+    name: "Veg Grilled Sandwich",
+    description: "Crispy grilled bread packed with garden fresh veggies and house herbs",
+    price: 50,
+    available: true,
+    category: "Snacks",
+    image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60"
   },
-  { 
-    name: 'Masala Dosa', 
-    description: 'Crispy dosa with potato filling and sambar', 
-    price: 80, 
-    available: true 
+  {
+    name: "Paneer Cheese Burger",
+    description: "Tender spiced paneer patty with cheddar cheese and fresh lettuce",
+    price: 85,
+    available: true,
+    category: "Burgers",
+    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60"
   },
-  { 
-    name: 'Cold Coffee', 
-    description: 'Chilled blended coffee with chocolate syrup', 
-    price: 60, 
-    available: true 
+  {
+    name: "Masala Dosa",
+    description: "Golden crispy crepe filled with tempered spiced potato smash & coconut chutney",
+    price: 60,
+    available: true,
+    category: "South Indian",
+    image: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=500&auto=format&fit=crop&q=60"
   },
-  { 
-    name: 'Veg Momos (8 pcs)', 
-    description: 'Steamed dumplings served with spicy dip', 
-    price: 70, 
-    available: false 
+  {
+    name: "Cold Coffee Shake",
+    description: "Thick chilled brewed espresso blend with rich cream and chocolate drizzle",
+    price: 45,
+    available: true,
+    category: "Beverages",
+    image: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=500&auto=format&fit=crop&q=60"
+  },
+  {
+    name: "Samosa Chaat",
+    description: "Two crushed crisp samosas topped with tangy chole, curd and mint chutney",
+    price: 40,
+    available: false, // Intentionally marked unavailable for availability testing
+    category: "Snacks",
+    image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&auto=format&fit=crop&q=60"
+  },
+  {
+    name: "Hakka Noodles",
+    description: "Wok-tossed noodles with shredded cabbage, bell peppers and spring onions",
+    price: 75,
+    available: true,
+    category: "Chinese",
+    image: "https://images.unsplash.com/photo-1612927601601-6638404737ce?w=500&auto=format&fit=crop&q=60"
   }
 ];
 

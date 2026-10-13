@@ -7,11 +7,17 @@ const staffController = require('../controllers/staffController');
 const { staffAuth } = require('../middleware/auth');
 
 // ==========================================
-// 1. PUBLIC MENU ENDPOINTS
+// 1. PUBLIC MENU & RUSH ENDPOINTS
 // ==========================================
 
 // GET /api/menu - List all menu items with name, price, availability
 router.get('/menu', menuController.getMenu);
+
+// Public rush / active summary (useful for student UI)
+router.get('/rush', orderController.getActiveOrders);
+
+// Public / shared dashboard shortcut (Project Guide page 4)
+router.get('/dashboard', orderController.getActiveOrders);
 
 // ==========================================
 // 2. PUBLIC ORDER ENDPOINTS
@@ -22,9 +28,6 @@ router.post('/orders', orderController.placeOrder);
 
 // GET /api/orders/:orderNumber - Track an order
 router.get('/orders/:orderNumber', orderController.getOrder);
-
-// Public / shared dashboard shortcut (Project Guide page 4)
-router.get('/dashboard', orderController.getActiveOrders);
 
 // ==========================================
 // 3. STAFF AUTHENTICATION
@@ -57,6 +60,9 @@ router.patch('/menu/:itemId/availability', staffAuth, menuController.updateAvail
 
 // POST /api/staff/menu - Create new menu item
 router.post('/staff/menu', staffAuth, menuController.createMenuItem);
+
+// DELETE /api/staff/menu/:itemId - Delete menu item
+router.delete('/staff/menu/:itemId', staffAuth, menuController.deleteMenuItem);
 
 // ==========================================
 // 5. DEMO & TESTING UTILITIES FOR PRESENTATION

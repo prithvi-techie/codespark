@@ -95,12 +95,12 @@ async function runTests() {
     const menuRes = await request('GET', '/api/menu');
     assert(menuRes.status === 200, 'GET /api/menu returns HTTP 200');
     assert(Array.isArray(menuRes.data.items), 'GET /api/menu returns items array');
-    assert(menuRes.data.items.length === 4, 'Menu contains 4 seeded items');
+    assert(menuRes.data.items.length >= 4, 'Menu contains seeded items (at least 4)');
 
-    const sandwich = menuRes.data.items.find(i => i.name === 'Veg Sandwich');
-    const momos = menuRes.data.items.find(i => i.name.includes('Momos'));
-    assert(sandwich && sandwich.available === true, 'Veg Sandwich is available');
-    assert(momos && momos.available === false, 'Veg Momos are unavailable by default');
+    const sandwich = menuRes.data.items.find(i => i.name.includes('Sandwich'));
+    const unavailableItem = menuRes.data.items.find(i => i.available === false);
+    assert(sandwich && sandwich.available === true, 'Sandwich is available');
+    assert(unavailableItem && unavailableItem.available === false, 'An item is unavailable by default for testing');
     assert(sandwich.id && typeof sandwich.price === 'number', 'Menu item has id string and numeric price');
 
     // ----------------------------------------------------
@@ -123,7 +123,7 @@ async function runTests() {
     // ----------------------------------------------------
     console.log('\nTest Suite 3: Unavailable Items Validation');
     const orderUnavailRes = await request('POST', '/api/orders', {
-      items: [{ itemId: momos.id, quantity: 1 }]
+      items: [{ itemId: unavailableItem.id, quantity: 1 }]
     });
     assert(orderUnavailRes.status === 409, 'Ordering unavailable item returns HTTP 409');
     assert(orderUnavailRes.data.error.code === 'ITEM_UNAVAILABLE', 'Error code is "ITEM_UNAVAILABLE"');

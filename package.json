@@ -7,7 +7,10 @@
     "start": "npx serve frontend/student-ui -p 3000",
     "start:student": "npx serve frontend/student-ui -p 3000",
     "start:admin": "npx serve frontend/admin-ui -p 3001",
-    "test": "node test/runner.js"
+    "backend": "cd backend && npm run dev",
+    "test": "node test/runner.js",
+    "test:integration": "node test/integration-test.js",
+    "test:backend": "cd backend && npm test"
   },
   "keywords": [
     "canteen",
