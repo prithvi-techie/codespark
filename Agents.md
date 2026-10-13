@@ -1,0 +1,25 @@
+## Full-Stack Development Rules
+
+- Work on the complete Smart Canteen Order & Rush Tracker project.
+- Frontend: HTML, CSS, and Vanilla JavaScript.
+- Backend: Node.js and Express.js.
+- Database: MongoDB.
+- Deployment: Render.
+- Follow `ARCHITECTURE.md` for the overall system design.
+- Follow `API_CONTRACT.md` for API endpoints, request bodies, response formats, and error handling.
+- Follow `DATABASE_SCHEMA.md` for database structure and relationships.
+- Follow `RULES.md` for coding standards and security requirements.
+- Use consistent field names, endpoint paths, and order status values across the frontend and backend.
+- Keep frontend API calls organized in `frontend/js/api.js`.
+- Validate all inputs on the backend; frontend validation is only for user experience.
+- Calculate final order totals and verify item availability on the backend.
+- Protect staff operations using backend authentication and authorization.
+- Never expose database credentials, authentication secrets, or other private configuration in frontend code.
+- Never return stack traces, credentials, or internal server details to users.
+- Handle loading states, empty states, network failures, and API errors gracefully.
+- Do not use unsafe DOM rendering for untrusted data.
+- Keep the application responsive and usable on mobile and desktop.
+- Avoid unnecessary dependencies and unrelated rewrites.
+- Before changing a shared API contract or database structure, update the relevant documentation and keep all dependent code consistent.
+- Test the complete flow from menu loading to order placement, status updates, and rush-level display.
+- Ensure the project works as an integrated application, not merely as separate frontend and backend demos.
